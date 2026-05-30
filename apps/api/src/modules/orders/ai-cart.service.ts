@@ -5,7 +5,7 @@ import { Repository, ILike } from 'typeorm';
 import OpenAI from 'openai';
 import { Product } from '../../database/entities/product.entity';
 
-interface ParsedItem {
+export interface ParsedItem {
   name: string;
   nameAr: string;
   quantity: number;
