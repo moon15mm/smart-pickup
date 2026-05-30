@@ -6,7 +6,7 @@ services:
     plan: free
     rootDir: .
     buildCommand: npx --yes pnpm@9 install --no-frozen-lockfile --shamefully-hoist --prod
-    startCommand: node apps/api/dist/apps/api/src/main
+    startCommand: node apps/api/dist/main
     healthCheckPath: /api/v1/health
     envVars:
       - key: NODE_ENV
