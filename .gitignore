@@ -2,8 +2,8 @@
 node_modules/
 .pnpm-store/
 
-# Build outputs
-dist/
+# Build outputs — API dist is committed for Render deployment
+# dist/
 .next/
 out/
 

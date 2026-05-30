@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException, TooManyRequestsException, BadRequestException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, HttpException, HttpStatus, BadRequestException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ConfigService } from '@nestjs/config';
@@ -25,7 +25,7 @@ export class AuthService {
 
   async sendOtp(dto: SendOtpDto): Promise<{ message: string }> {
     const rate = await this.otpService.getRateLimit(dto.mobile);
-    if (rate > 5) throw new TooManyRequestsException('Too many OTP requests');
+    if (rate > 5) throw new HttpException('Too many OTP requests', HttpStatus.TOO_MANY_REQUESTS);
 
     const otp = this.otpService.generate();
     await this.otpService.store(dto.mobile, otp);

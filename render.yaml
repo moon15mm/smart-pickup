@@ -5,8 +5,8 @@ services:
     region: oregon
     plan: free
     rootDir: .
-    buildCommand: npx --yes pnpm@9 install --no-frozen-lockfile --shamefully-hoist && cd apps/api && ../../node_modules/.bin/tsc -p tsconfig.json --noEmitOnError false
-    startCommand: node apps/api/dist/main
+    buildCommand: npx --yes pnpm@9 install --no-frozen-lockfile --shamefully-hoist --prod
+    startCommand: node apps/api/dist/apps/api/src/main
     healthCheckPath: /api/v1/health
     envVars:
       - key: NODE_ENV

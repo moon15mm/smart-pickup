@@ -17,7 +17,7 @@ export class Tenant {
   @Column({ length: 100, unique: true })
   slug: string;
 
-  @Column({ type: 'enum', enum: TenantPlan, default: TenantPlan.TRIAL })
+  @Column({ type: 'enum', enum: TenantPlan, default: TenantPlan.STARTER })
   plan: TenantPlan;
 
   @Column({ type: 'enum', enum: TenantStatus, default: TenantStatus.TRIAL })
