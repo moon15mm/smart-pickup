@@ -5,7 +5,7 @@ services:
     region: oregon
     plan: free
     rootDir: .
-    buildCommand: npx --yes pnpm@9 install --no-frozen-lockfile && npx pnpm@9 --filter @smart-pickup/api build
+    buildCommand: npx --yes pnpm@9 install --no-frozen-lockfile && cd apps/api && npx tsc -p tsconfig.json --noEmitOnError false
     startCommand: node apps/api/dist/main
     healthCheckPath: /api/v1/health
     envVars:
