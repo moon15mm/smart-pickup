@@ -12,6 +12,7 @@
     "baseUrl": "./",
     "incremental": false,
     "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
     "strictNullChecks": false,
     "noImplicitAny": false,
     "strictBindCallApply": false,
@@ -19,8 +20,13 @@
     "noFallthroughCasesInSwitch": false,
     "noUnusedLocals": false,
     "noUnusedParameters": false,
+    "noEmitOnError": false,
+    "allowJs": true,
     "paths": {
-      "@smart-pickup/shared": ["../../packages/shared/src"]
+      "@smart-pickup/shared": ["../../packages/shared/src"],
+      "@nestjs/common": ["../../node_modules/@nestjs/common"],
+      "@nestjs/core": ["../../node_modules/@nestjs/core"]
     }
-  }
+  },
+  "exclude": ["node_modules", "dist", "**/*.spec.ts"]
 }

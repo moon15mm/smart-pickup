@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "scripts": {
     "dev": "nest start --watch",
-    "build": "node_modules/.bin/nest build || npx @nestjs/cli build",
+    "build": "node_modules/.bin/tsc -p tsconfig.json --noEmitOnError false && echo 'Build complete'",
     "start": "node dist/main",
     "test": "jest",
     "lint": "eslint src --ext .ts",
