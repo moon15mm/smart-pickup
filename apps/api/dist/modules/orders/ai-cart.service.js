@@ -23,7 +23,11 @@ let AiCartService = class AiCartService {
     constructor(config, productRepo) {
         this.config = config;
         this.productRepo = productRepo;
-        this.openai = new openai_1.default({ apiKey: config.get('OPENAI_API_KEY') });
+        this.openai = null;
+        const apiKey = config.get('OPENAI_API_KEY');
+        if (apiKey) {
+            this.openai = new openai_1.default({ apiKey });
+        }
     }
     async parseShoppingList(rawText, storeId) {
         const systemPrompt = `You are a shopping list parser for a Gulf retail store.
@@ -32,6 +36,8 @@ Extract items from the customer's text. Return JSON array with:
 Only return valid JSON, nothing else.`;
         let parsed = [];
         try {
+            if (!this.openai)
+                throw new Error('OpenAI not configured');
             const completion = await this.openai.chat.completions.create({
                 model: 'gpt-4o-mini',
                 messages: [

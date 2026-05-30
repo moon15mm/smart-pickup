@@ -16,13 +16,16 @@ export interface ParsedItem {
 
 @Injectable()
 export class AiCartService {
-  private openai: OpenAI;
+  private openai: OpenAI | null = null;
 
   constructor(
     private config: ConfigService,
     @InjectRepository(Product) private productRepo: Repository<Product>,
   ) {
-    this.openai = new OpenAI({ apiKey: config.get('OPENAI_API_KEY') });
+    const apiKey = config.get<string>('OPENAI_API_KEY');
+    if (apiKey) {
+      this.openai = new OpenAI({ apiKey });
+    }
   }
 
   async parseShoppingList(rawText: string, storeId: string): Promise<ParsedItem[]> {
@@ -34,6 +37,7 @@ Only return valid JSON, nothing else.`;
     let parsed: Array<{ name: string; nameAr: string; quantity: number }> = [];
 
     try {
+      if (!this.openai) throw new Error('OpenAI not configured');
       const completion = await this.openai.chat.completions.create({
         model: 'gpt-4o-mini',
         messages: [
