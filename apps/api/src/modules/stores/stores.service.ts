@@ -1,0 +1,68 @@
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { v4 as uuidv4 } from 'uuid';
+import { Store } from '../../database/entities/store.entity';
+import { ParkingSpot } from '../../database/entities/parking-spot.entity';
+import { CreateStoreDto } from './dto/create-store.dto';
+import { CreateParkingSpotsDto } from './dto/create-parking-spots.dto';
+
+@Injectable()
+export class StoresService {
+  constructor(
+    @InjectRepository(Store) private storeRepo: Repository<Store>,
+    @InjectRepository(ParkingSpot) private spotRepo: Repository<ParkingSpot>,
+  ) {}
+
+  async findByTenant(tenantId: string): Promise<Store[]> {
+    return this.storeRepo.find({ where: { tenantId, isActive: true } });
+  }
+
+  async findById(id: string): Promise<Store> {
+    const store = await this.storeRepo.findOne({
+      where: { id, isActive: true },
+      relations: ['parkingSpots'],
+    });
+    if (!store) throw new NotFoundException('Store not found');
+    return store;
+  }
+
+  async findByQr(qrCode: string): Promise<{ store: Store; spot: ParkingSpot }> {
+    const spot = await this.spotRepo.findOne({
+      where: { qrCode, isActive: true },
+      relations: ['store'],
+    });
+    if (!spot) throw new NotFoundException('Invalid QR code');
+    return { store: spot.store, spot };
+  }
+
+  async create(dto: CreateStoreDto, tenantId: string): Promise<Store> {
+    const store = this.storeRepo.create({ ...dto, tenantId });
+    return this.storeRepo.save(store);
+  }
+
+  async update(id: string, dto: Partial<CreateStoreDto>, tenantId: string): Promise<Store> {
+    const store = await this.storeRepo.findOne({ where: { id, tenantId } });
+    if (!store) throw new NotFoundException('Store not found');
+    Object.assign(store, dto);
+    return this.storeRepo.save(store);
+  }
+
+  async createParkingSpots(storeId: string, dto: CreateParkingSpotsDto, tenantId: string) {
+    const store = await this.storeRepo.findOne({ where: { id: storeId, tenantId } });
+    if (!store) throw new NotFoundException('Store not found');
+
+    const spots: ParkingSpot[] = [];
+    for (const spotNumber of dto.spotNumbers) {
+      const qrCode = `SP-${storeId.slice(0, 8)}-${spotNumber}-${uuidv4().slice(0, 8)}`;
+      const spot = this.spotRepo.create({ storeId, spotNumber, qrCode });
+      spots.push(spot);
+    }
+    await this.spotRepo.save(spots);
+    return spots;
+  }
+
+  async findSpotsByStore(storeId: string) {
+    return this.spotRepo.find({ where: { storeId, isActive: true }, order: { spotNumber: 'ASC' } });
+  }
+}
