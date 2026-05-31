@@ -47,7 +47,9 @@ export default function OrderTrackerPage({ params }: Props) {
         } : prev);
       }
     });
-    return () => { off(); };
+    return () => {
+      void off();
+    };
   }, [order, params.id]);
 
   if (loading) {
