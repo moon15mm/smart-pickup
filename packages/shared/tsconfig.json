@@ -6,7 +6,8 @@
     "declaration": true,
     "skipLibCheck": true,
     "noEmitOnError": false,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "types": []
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"]
