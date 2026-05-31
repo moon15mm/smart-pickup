@@ -28,6 +28,7 @@
 @layer base {
   * { @apply border-border; box-sizing: border-box; }
   body { @apply bg-background text-foreground; }
+  h1, h2, h3, .font-heading { font-family: var(--font-heading), var(--font-sans), sans-serif; }
 }
 
 @layer utilities {
