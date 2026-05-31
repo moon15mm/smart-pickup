@@ -18,9 +18,8 @@ const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const tenant_entity_1 = require("../../database/entities/tenant.entity");
 const shared_1 = require("@smart-pickup/shared");
-class RegisterTenantDto {
-}
-exports.RegisterTenantDto = RegisterTenantDto;
+const register_tenant_dto_1 = require("./dto/register-tenant.dto");
+Object.defineProperty(exports, "RegisterTenantDto", { enumerable: true, get: function () { return register_tenant_dto_1.RegisterTenantDto; } });
 let TenantsService = class TenantsService {
     constructor(repo) {
         this.repo = repo;

@@ -18,9 +18,8 @@ const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const bcrypt = require("bcrypt");
 const staff_entity_1 = require("../../database/entities/staff.entity");
-class CreateStaffDto {
-}
-exports.CreateStaffDto = CreateStaffDto;
+const create_staff_dto_1 = require("./dto/create-staff.dto");
+Object.defineProperty(exports, "CreateStaffDto", { enumerable: true, get: function () { return create_staff_dto_1.CreateStaffDto; } });
 let StaffService = class StaffService {
     constructor(repo) {
         this.repo = repo;

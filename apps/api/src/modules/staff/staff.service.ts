@@ -4,15 +4,9 @@ import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { Staff } from '../../database/entities/staff.entity';
 import { StaffRole } from '@smart-pickup/shared';
+import { CreateStaffDto } from './dto/create-staff.dto';
 
-export class CreateStaffDto {
-  name: string;
-  mobile: string;
-  role: StaffRole;
-  storeId: string;
-  pin?: string;
-  password?: string;
-}
+export { CreateStaffDto };
 
 @Injectable()
 export class StaffService {

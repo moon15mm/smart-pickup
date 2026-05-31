@@ -3,13 +3,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Tenant } from '../../database/entities/tenant.entity';
 import { TenantPlan, TenantStatus } from '@smart-pickup/shared';
+import { RegisterTenantDto } from './dto/register-tenant.dto';
 
-export class RegisterTenantDto {
-  name: string;
-  slug: string;
-  billingEmail: string;
-  plan?: TenantPlan;
-}
+export { RegisterTenantDto };
 
 @Injectable()
 export class TenantsService {
