@@ -14,11 +14,13 @@ async function bootstrap() {
           process.env.FRONTEND_URL,
           process.env.DASHBOARD_URL,
         ].filter(Boolean);
-        if (!origin || allowed.includes(origin)) {
-          callback(null, true);
-        } else {
-          callback(new Error('Not allowed by CORS'));
-        }
+        const ok =
+          !origin ||
+          allowed.includes(origin) ||
+          /\.vercel\.app$/.test(origin) ||
+          /^https?:\/\/localhost(:\d+)?$/.test(origin);
+        // Never reject — just disable credentials for unknown origins
+        callback(null, ok ? origin : false);
       },
       credentials: true,
     },
