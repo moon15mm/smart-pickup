@@ -9,6 +9,9 @@ import { OrderStatus } from '@smart-pickup/shared';
 import type { Order } from '@smart-pickup/shared';
 import { OrderCard } from '@/components/OrderCard';
 import { Sidebar } from '@/components/Sidebar';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { RefreshCw, Inbox } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 type Filter = 'active' | 'all' | OrderStatus;
@@ -97,46 +100,42 @@ export default function OrdersPage() {
       <main className="flex-1 p-6">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-2xl font-black text-gray-900">الطلبات</h1>
-            <p className="text-gray-400 text-sm">اليوم • {orders.length} طلب</p>
+            <h1 className="text-2xl font-black text-foreground">الطلبات</h1>
+            <p className="text-muted-foreground text-sm">اليوم • {orders.length} طلب</p>
           </div>
-          <button
-            onClick={load}
-            className="text-sm text-blue-600 border border-blue-200 px-4 py-2 rounded-xl hover:bg-blue-50"
-          >
-            ↻ تحديث
-          </button>
+          <Button variant="outline" size="sm" onClick={load} className="gap-2 text-primary">
+            <RefreshCw className="h-4 w-4" /> تحديث
+          </Button>
         </div>
 
         {/* Filters */}
         <div className="flex gap-2 overflow-x-auto mb-6 pb-2 no-scrollbar">
           {FILTERS.map((f) => (
-            <button
+            <Button
               key={f.value}
+              size="sm"
+              variant={filter === f.value ? 'default' : 'outline'}
               onClick={() => setFilter(f.value)}
-              className={cn(
-                'px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition-colors',
-                filter === f.value
-                  ? 'bg-blue-900 text-white'
-                  : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50',
-              )}
+              className="whitespace-nowrap"
             >
               {f.label}
-            </button>
+            </Button>
           ))}
         </div>
 
         {loading ? (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {[...Array(6)].map((_, i) => (
-              <div key={i} className="bg-white rounded-2xl h-52 animate-pulse" />
+              <Card key={i} className="h-52 animate-pulse bg-muted/50 border-0" />
             ))}
           </div>
         ) : orders.length === 0 ? (
-          <div className="text-center py-20 text-gray-400">
-            <p className="text-5xl mb-3">📭</p>
-            <p className="text-lg">لا توجد طلبات</p>
-          </div>
+          <Card className="border-dashed">
+            <div className="text-center py-20 text-muted-foreground">
+              <Inbox className="h-14 w-14 mx-auto mb-3 opacity-40" />
+              <p className="text-lg font-medium">لا توجد طلبات</p>
+            </div>
+          </Card>
         ) : (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {orders.map((order) => (

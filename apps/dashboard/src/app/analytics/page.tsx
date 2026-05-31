@@ -98,7 +98,7 @@ export default function AnalyticsPage() {
 
         <div className="grid grid-cols-2 gap-4">
           {/* Top products */}
-          <div className="bg-white rounded-2xl p-5 shadow-sm">
+          <div className="bg-card rounded-2xl p-5 shadow-sm border border-border">
             <h2 className="font-bold text-gray-700 mb-4">أكثر المنتجات مبيعاً</h2>
             {dashboard?.topProducts?.length ? (
               <ResponsiveContainer width="100%" height={200}>
@@ -115,7 +115,7 @@ export default function AnalyticsPage() {
           </div>
 
           {/* Hourly */}
-          <div className="bg-white rounded-2xl p-5 shadow-sm">
+          <div className="bg-card rounded-2xl p-5 shadow-sm border border-border">
             <h2 className="font-bold text-gray-700 mb-4">توزيع الطلبات بالساعة</h2>
             {dashboard?.hourlyBreakdown?.length ? (
               <ResponsiveContainer width="100%" height={200}>

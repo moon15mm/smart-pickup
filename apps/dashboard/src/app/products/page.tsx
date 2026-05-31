@@ -7,6 +7,11 @@ import { Sidebar } from '@/components/Sidebar';
 import toast from 'react-hot-toast';
 import type { Product } from '@smart-pickup/shared';
 import { formatPrice } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Card } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Plus } from 'lucide-react';
 
 export default function ProductsPage() {
   const { storeId, staff } = useAuth();
@@ -60,68 +65,66 @@ export default function ProductsPage() {
       <Sidebar />
       <main className="flex-1 p-6">
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-black text-gray-900">المنتجات</h1>
-          <button
-            onClick={() => setEditing({ isActive: true, stockQuantity: 0 })}
-            className="bg-blue-900 text-white px-4 py-2 rounded-xl text-sm font-bold"
-          >
-            + إضافة منتج
-          </button>
+          <h1 className="text-2xl font-black text-foreground">المنتجات</h1>
+          <Button onClick={() => setEditing({ isActive: true, stockQuantity: 0 })} className="gap-1">
+            <Plus className="h-4 w-4" /> إضافة منتج
+          </Button>
         </div>
 
-        <div className="mb-4">
-          <input
+        <div className="mb-4 max-w-md">
+          <Input
             value={search}
             onChange={(e) => { setSearch(e.target.value); load(); }}
             placeholder="بحث عن منتج..."
-            className="w-full max-w-md border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-blue-400"
           />
         </div>
 
         {loading ? (
           <div className="space-y-2">
             {[...Array(5)].map((_, i) => (
-              <div key={i} className="h-16 bg-white rounded-xl animate-pulse" />
+              <Card key={i} className="h-16 animate-pulse bg-muted/50 border-0" />
             ))}
           </div>
         ) : (
-          <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+          <Card className="overflow-hidden p-0">
             <table className="w-full text-sm">
-              <thead className="bg-gray-50 border-b border-gray-100">
+              <thead className="bg-secondary border-b border-border">
                 <tr>
-                  <th className="text-right px-4 py-3 font-semibold text-gray-500">المنتج</th>
-                  <th className="text-right px-4 py-3 font-semibold text-gray-500">السعر</th>
-                  <th className="text-right px-4 py-3 font-semibold text-gray-500">المخزون</th>
-                  <th className="text-right px-4 py-3 font-semibold text-gray-500">الحالة</th>
+                  <th className="text-right px-4 py-3 font-semibold text-muted-foreground">المنتج</th>
+                  <th className="text-right px-4 py-3 font-semibold text-muted-foreground">السعر</th>
+                  <th className="text-right px-4 py-3 font-semibold text-muted-foreground">المخزون</th>
+                  <th className="text-right px-4 py-3 font-semibold text-muted-foreground">الحالة</th>
                   <th className="px-4 py-3" />
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-50">
+              <tbody className="divide-y divide-border">
                 {products.map((p) => (
                   <tr key={p.id} className="hover:bg-gray-50 transition-colors">
                     <td className="px-4 py-3">
-                      <p className="font-medium">{p.nameAr}</p>
-                      <p className="text-gray-400 text-xs">{p.name}</p>
+                      <p className="font-medium text-foreground">{p.nameAr}</p>
+                      <p className="text-muted-foreground text-xs">{p.name}</p>
                     </td>
-                    <td className="px-4 py-3 font-bold text-blue-900">{formatPrice(p.price)}</td>
+                    <td className="px-4 py-3 font-bold text-primary">{formatPrice(p.price)}</td>
                     <td className="px-4 py-3">
-                      <span className={`font-medium ${p.stockQuantity === 0 ? 'text-red-500' : p.stockQuantity < 5 ? 'text-amber-500' : 'text-green-600'}`}>
+                      <span className={`font-medium ${p.stockQuantity === 0 ? 'text-destructive' : p.stockQuantity < 5 ? 'text-amber-500' : 'text-emerald-600'}`}>
                         {p.stockQuantity}
                       </span>
                     </td>
                     <td className="px-4 py-3">
-                      <button onClick={() => toggleActive(p)} className={`text-xs px-2 py-1 rounded-full font-medium ${p.isActive ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
-                        {p.isActive ? 'نشط' : 'معطل'}
+                      <button onClick={() => toggleActive(p)}>
+                        <Badge variant={p.isActive ? 'success' : 'muted'}>
+                          {p.isActive ? 'نشط' : 'معطل'}
+                        </Badge>
                       </button>
                     </td>
                     <td className="px-4 py-3">
-                      <button onClick={() => setEditing(p)} className="text-blue-500 text-xs hover:underline">تعديل</button>
+                      <Button variant="link" size="sm" onClick={() => setEditing(p)} className="text-xs h-auto p-0">تعديل</Button>
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
-          </div>
+          </Card>
         )}
 
         {/* Edit modal */}
