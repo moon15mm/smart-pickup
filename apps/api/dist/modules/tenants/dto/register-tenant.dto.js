@@ -32,3 +32,34 @@ __decorate([
     (0, class_validator_1.IsEnum)(shared_1.TenantPlan),
     __metadata("design:type", String)
 ], RegisterTenantDto.prototype, "plan", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], RegisterTenantDto.prototype, "ownerName", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], RegisterTenantDto.prototype, "ownerMobile", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.Length)(4, 6),
+    __metadata("design:type", String)
+], RegisterTenantDto.prototype, "ownerPin", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], RegisterTenantDto.prototype, "storeName", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], RegisterTenantDto.prototype, "storeNameAr", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsEnum)(shared_1.StoreCategory),
+    __metadata("design:type", String)
+], RegisterTenantDto.prototype, "storeCategory", void 0);

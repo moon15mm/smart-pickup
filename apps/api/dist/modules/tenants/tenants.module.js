@@ -12,12 +12,15 @@ const typeorm_1 = require("@nestjs/typeorm");
 const tenants_controller_1 = require("./tenants.controller");
 const tenants_service_1 = require("./tenants.service");
 const tenant_entity_1 = require("../../database/entities/tenant.entity");
+const store_entity_1 = require("../../database/entities/store.entity");
+const staff_entity_1 = require("../../database/entities/staff.entity");
+const auth_module_1 = require("../auth/auth.module");
 let TenantsModule = class TenantsModule {
 };
 exports.TenantsModule = TenantsModule;
 exports.TenantsModule = TenantsModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([tenant_entity_1.Tenant])],
+        imports: [typeorm_1.TypeOrmModule.forFeature([tenant_entity_1.Tenant, store_entity_1.Store, staff_entity_1.Staff]), auth_module_1.AuthModule],
         controllers: [tenants_controller_1.TenantsController],
         providers: [tenants_service_1.TenantsService],
         exports: [tenants_service_1.TenantsService],
