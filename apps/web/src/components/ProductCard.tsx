@@ -1,8 +1,12 @@
 'use client';
 
 import Image from 'next/image';
+import { Plus, Package } from 'lucide-react';
 import { formatPrice } from '@/lib/utils';
 import type { Product } from '@smart-pickup/shared';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 
 interface Props {
   product: Product;
@@ -12,61 +16,44 @@ interface Props {
 export function ProductCard({ product, onAdd }: Props) {
   const price = Number(product.salePrice ?? product.price);
   const originalPrice = product.salePrice ? Number(product.price) : null;
+  const soldOut = product.stockQuantity === 0;
 
   return (
-    <div className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 flex flex-col">
-      <div className="relative h-36 bg-gray-100">
+    <Card className="overflow-hidden flex flex-col p-0">
+      <div className="relative h-36 bg-secondary">
         {product.imageUrl ? (
-          <Image
-            src={product.imageUrl}
-            alt={product.nameAr}
-            fill
-            className="object-cover"
-            sizes="50vw"
-          />
+          <Image src={product.imageUrl} alt={product.nameAr} fill className="object-cover" sizes="50vw" />
         ) : (
-          <div className="w-full h-full flex items-center justify-center text-4xl text-gray-300">
-            📦
+          <div className="w-full h-full flex items-center justify-center text-muted-foreground/40">
+            <Package className="h-12 w-12" />
           </div>
         )}
         {product.salePrice && (
-          <span className="absolute top-2 right-2 bg-red-500 text-white text-xs px-2 py-0.5 rounded-full font-bold">
-            خصم
-          </span>
+          <Badge variant="destructive" className="absolute top-2 right-2">خصم</Badge>
         )}
-        {product.stockQuantity === 0 && (
+        {soldOut && (
           <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-            <span className="text-white text-xs font-bold bg-black/60 px-3 py-1 rounded-full">
-              نفذت الكمية
-            </span>
+            <Badge variant="muted" className="bg-black/60 text-white">نفذت الكمية</Badge>
           </div>
         )}
       </div>
 
       <div className="p-3 flex flex-col flex-1">
-        <p className="text-sm font-semibold text-gray-800 leading-tight mb-1 line-clamp-2">
-          {product.nameAr}
-        </p>
-
+        <p className="text-sm font-semibold leading-tight mb-1 line-clamp-2">{product.nameAr}</p>
         <div className="mt-auto flex items-center justify-between">
           <div>
-            <span className="text-blue-900 font-bold text-sm">{formatPrice(price)}</span>
+            <span className="text-primary font-bold text-sm">{formatPrice(price)}</span>
             {originalPrice && (
-              <span className="text-gray-400 text-xs line-through mr-1">
+              <span className="text-muted-foreground text-xs line-through mr-1">
                 {formatPrice(originalPrice)}
               </span>
             )}
           </div>
-
-          <button
-            disabled={product.stockQuantity === 0}
-            onClick={onAdd}
-            className="w-8 h-8 bg-blue-900 text-white rounded-full flex items-center justify-center text-lg font-bold disabled:opacity-40 disabled:cursor-not-allowed active:scale-95 transition-transform"
-          >
-            +
-          </button>
+          <Button size="icon" disabled={soldOut} onClick={onAdd} className="h-8 w-8 rounded-full">
+            <Plus className="h-4 w-4" />
+          </Button>
         </div>
       </div>
-    </div>
+    </Card>
   );
 }
