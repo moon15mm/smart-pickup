@@ -23,6 +23,15 @@ let TenantsController = class TenantsController {
     register(dto) {
         return this.service.register(dto);
     }
+    getAdminStats() {
+        return this.service.getAdminStats();
+    }
+    listAll() {
+        return this.service.listAll();
+    }
+    adminUpdate(id, dto) {
+        return this.service.adminUpdate(id, dto.plan, dto.status);
+    }
     me(req) {
         return this.service.findById(req.user.tenantId);
     }
@@ -38,6 +47,26 @@ __decorate([
     __metadata("design:paramtypes", [tenants_service_1.RegisterTenantDto]),
     __metadata("design:returntype", void 0)
 ], TenantsController.prototype, "register", null);
+__decorate([
+    (0, common_1.Get)('admin/stats'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], TenantsController.prototype, "getAdminStats", null);
+__decorate([
+    (0, common_1.Get)('admin/list'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], TenantsController.prototype, "listAll", null);
+__decorate([
+    (0, common_1.Patch)(':id/admin-update'),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", void 0)
+], TenantsController.prototype, "adminUpdate", null);
 __decorate([
     (0, common_1.Get)('me'),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt')),

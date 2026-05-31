@@ -6,6 +6,7 @@ import * as bcrypt from 'bcrypt';
 import { Tenant } from '../../database/entities/tenant.entity';
 import { Store } from '../../database/entities/store.entity';
 import { Staff } from '../../database/entities/staff.entity';
+import { Order } from '../../database/entities/order.entity';
 import { TenantPlan, TenantStatus, StaffRole, StoreCategory } from '@smart-pickup/shared';
 import { RegisterTenantDto } from './dto/register-tenant.dto';
 
@@ -17,6 +18,7 @@ export class TenantsService {
     @InjectRepository(Tenant) private repo: Repository<Tenant>,
     @InjectRepository(Store) private storeRepo: Repository<Store>,
     @InjectRepository(Staff) private staffRepo: Repository<Staff>,
+    @InjectRepository(Order) private orderRepo: Repository<Order>,
     private jwt: JwtService,
   ) {}
 
@@ -87,6 +89,63 @@ export class TenantsService {
   async updateSettings(id: string, settings: Record<string, unknown>): Promise<Tenant> {
     const tenant = await this.findById(id);
     tenant.settings = { ...tenant.settings, ...settings };
+    return this.repo.save(tenant);
+  }
+
+  async listAll(): Promise<Tenant[]> {
+    return this.repo.find({
+      relations: ['stores', 'staff'],
+      order: { createdAt: 'DESC' },
+    });
+  }
+
+  async getAdminStats(): Promise<any> {
+    const tenantsCount = await this.repo.count();
+    const storesCount = await this.storeRepo.count();
+    const ordersCount = await this.orderRepo.count();
+    
+    const revenueResult = await this.orderRepo
+      .createQueryBuilder('order')
+      .select('SUM(order.total)', 'total')
+      .where('order.status = :status', { status: 'delivered' })
+      .getRawOne();
+    
+    const totalRevenue = parseFloat(revenueResult?.total ?? '0');
+
+    const statusResult = await this.repo
+      .createQueryBuilder('t')
+      .select('t.status, COUNT(t.id)', 'count')
+      .groupBy('t.status')
+      .getRawMany();
+    const statusDistribution = statusResult.reduce((acc, r) => {
+      acc[r.status] = parseInt(r.count, 10);
+      return acc;
+    }, {} as Record<string, number>);
+
+    const planResult = await this.repo
+      .createQueryBuilder('t')
+      .select('t.plan, COUNT(t.id)', 'count')
+      .groupBy('t.plan')
+      .getRawMany();
+    const planDistribution = planResult.reduce((acc, r) => {
+      acc[r.plan] = parseInt(r.count, 10);
+      return acc;
+    }, {} as Record<string, number>);
+
+    return {
+      tenantsCount,
+      storesCount,
+      ordersCount,
+      totalRevenue,
+      statusDistribution,
+      planDistribution,
+    };
+  }
+
+  async adminUpdate(id: string, plan?: TenantPlan, status?: TenantStatus): Promise<Tenant> {
+    const tenant = await this.findById(id);
+    if (plan) tenant.plan = plan;
+    if (status) tenant.status = status;
     return this.repo.save(tenant);
   }
 }

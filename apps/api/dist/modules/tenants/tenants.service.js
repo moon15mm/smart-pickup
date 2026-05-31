@@ -21,14 +21,16 @@ const bcrypt = require("bcrypt");
 const tenant_entity_1 = require("../../database/entities/tenant.entity");
 const store_entity_1 = require("../../database/entities/store.entity");
 const staff_entity_1 = require("../../database/entities/staff.entity");
+const order_entity_1 = require("../../database/entities/order.entity");
 const shared_1 = require("@smart-pickup/shared");
 const register_tenant_dto_1 = require("./dto/register-tenant.dto");
 Object.defineProperty(exports, "RegisterTenantDto", { enumerable: true, get: function () { return register_tenant_dto_1.RegisterTenantDto; } });
 let TenantsService = class TenantsService {
-    constructor(repo, storeRepo, staffRepo, jwt) {
+    constructor(repo, storeRepo, staffRepo, orderRepo, jwt) {
         this.repo = repo;
         this.storeRepo = storeRepo;
         this.staffRepo = staffRepo;
+        this.orderRepo = orderRepo;
         this.jwt = jwt;
     }
     async register(dto) {
@@ -86,6 +88,57 @@ let TenantsService = class TenantsService {
         tenant.settings = { ...tenant.settings, ...settings };
         return this.repo.save(tenant);
     }
+    async listAll() {
+        return this.repo.find({
+            relations: ['stores', 'staff'],
+            order: { createdAt: 'DESC' },
+        });
+    }
+    async getAdminStats() {
+        const tenantsCount = await this.repo.count();
+        const storesCount = await this.storeRepo.count();
+        const ordersCount = await this.orderRepo.count();
+        const revenueResult = await this.orderRepo
+            .createQueryBuilder('order')
+            .select('SUM(order.total)', 'total')
+            .where('order.status = :status', { status: 'delivered' })
+            .getRawOne();
+        const totalRevenue = parseFloat(revenueResult?.total ?? '0');
+        const statusResult = await this.repo
+            .createQueryBuilder('t')
+            .select('t.status, COUNT(t.id)', 'count')
+            .groupBy('t.status')
+            .getRawMany();
+        const statusDistribution = statusResult.reduce((acc, r) => {
+            acc[r.status] = parseInt(r.count, 10);
+            return acc;
+        }, {});
+        const planResult = await this.repo
+            .createQueryBuilder('t')
+            .select('t.plan, COUNT(t.id)', 'count')
+            .groupBy('t.plan')
+            .getRawMany();
+        const planDistribution = planResult.reduce((acc, r) => {
+            acc[r.plan] = parseInt(r.count, 10);
+            return acc;
+        }, {});
+        return {
+            tenantsCount,
+            storesCount,
+            ordersCount,
+            totalRevenue,
+            statusDistribution,
+            planDistribution,
+        };
+    }
+    async adminUpdate(id, plan, status) {
+        const tenant = await this.findById(id);
+        if (plan)
+            tenant.plan = plan;
+        if (status)
+            tenant.status = status;
+        return this.repo.save(tenant);
+    }
 };
 exports.TenantsService = TenantsService;
 exports.TenantsService = TenantsService = __decorate([
@@ -93,7 +146,9 @@ exports.TenantsService = TenantsService = __decorate([
     __param(0, (0, typeorm_1.InjectRepository)(tenant_entity_1.Tenant)),
     __param(1, (0, typeorm_1.InjectRepository)(store_entity_1.Store)),
     __param(2, (0, typeorm_1.InjectRepository)(staff_entity_1.Staff)),
+    __param(3, (0, typeorm_1.InjectRepository)(order_entity_1.Order)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
+        typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,
         jwt_1.JwtService])

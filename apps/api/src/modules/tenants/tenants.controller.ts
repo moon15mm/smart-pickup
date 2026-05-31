@@ -1,6 +1,7 @@
-import { Controller, Post, Get, Put, Body, Param, UseGuards, Request } from '@nestjs/common';
+import { Controller, Post, Get, Put, Patch, Body, Param, UseGuards, Request } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { TenantsService, RegisterTenantDto } from './tenants.service';
+import { TenantPlan, TenantStatus } from '@smart-pickup/shared';
 
 @Controller('tenants')
 export class TenantsController {
@@ -9,6 +10,24 @@ export class TenantsController {
   @Post('register')
   register(@Body() dto: RegisterTenantDto) {
     return this.service.register(dto);
+  }
+
+  @Get('admin/stats')
+  getAdminStats() {
+    return this.service.getAdminStats();
+  }
+
+  @Get('admin/list')
+  listAll() {
+    return this.service.listAll();
+  }
+
+  @Patch(':id/admin-update')
+  adminUpdate(
+    @Param('id') id: string,
+    @Body() dto: { plan?: TenantPlan; status?: TenantStatus },
+  ) {
+    return this.service.adminUpdate(id, dto.plan, dto.status);
   }
 
   @Get('me')
@@ -26,3 +45,4 @@ export class TenantsController {
     return this.service.updateSettings(req.user.tenantId, settings);
   }
 }
+
