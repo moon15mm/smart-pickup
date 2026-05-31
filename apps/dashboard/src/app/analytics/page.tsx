@@ -37,8 +37,8 @@ export default function AnalyticsPage() {
       api.get(`/analytics/store/${storeId}/dashboard?from=${today}T00:00:00&to=${today}T23:59:59`),
       api.get(`/analytics/store/${storeId}/daily-sales?days=${range}`),
     ]).then(([d, s]) => {
-      setDashboard(d as DashboardData);
-      setDaily(s as DailySale[]);
+      setDashboard(d as unknown as DashboardData);
+      setDaily(s as unknown as DailySale[]);
     });
   }, [storeId, range]);
 

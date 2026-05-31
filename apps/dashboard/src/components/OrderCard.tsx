@@ -2,12 +2,18 @@
 
 import { useState } from 'react';
 import { OrderStatus } from '@smart-pickup/shared';
-import type { Order } from '@smart-pickup/shared';
+import type { Customer, CustomerVehicle, Order, ParkingSpot } from '@smart-pickup/shared';
 import { formatPrice, formatDate } from '@/lib/utils';
 import { cn } from '@/lib/utils';
 
+type DashboardOrder = Order & {
+  customer?: Customer;
+  vehicle?: CustomerVehicle | null;
+  parkingSpot?: ParkingSpot | null;
+};
+
 interface Props {
-  order: Order;
+  order: DashboardOrder;
   onUpdateStatus: (id: string, status: OrderStatus, estimatedMins?: number) => void;
 }
 

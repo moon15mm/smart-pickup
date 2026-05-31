@@ -21,10 +21,14 @@ export function joinStoreRoom(storeId: string) {
 
 export function onNewOrder(cb: (data: unknown) => void) {
   getSocket().on(WsEvent.ORDER_CREATED, cb);
-  return () => getSocket().off(WsEvent.ORDER_CREATED, cb);
+  return () => {
+    getSocket().off(WsEvent.ORDER_CREATED, cb);
+  };
 }
 
 export function onOrderStatusUpdate(cb: (data: { orderId: string; status: string }) => void) {
   getSocket().on(WsEvent.ORDER_STATUS_UPDATED, cb);
-  return () => getSocket().off(WsEvent.ORDER_STATUS_UPDATED, cb);
+  return () => {
+    getSocket().off(WsEvent.ORDER_STATUS_UPDATED, cb);
+  };
 }
