@@ -1,7 +1,8 @@
 'use client';
 
+import { useEffect } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { ClipboardList, Package, Users, BarChart3, Settings, LogOut, Car } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { cn } from '@/lib/utils';
@@ -16,7 +17,18 @@ const NAV = [
 
 export function Sidebar() {
   const pathname = usePathname();
+  const router = useRouter();
   const { staff, logout } = useAuth();
+
+  // Redirect to login if session is missing (e.g. after logout or expiry)
+  useEffect(() => {
+    if (!useAuth.getState().token) router.replace('/login');
+  }, [router]);
+
+  const handleLogout = () => {
+    logout();
+    router.replace('/login');
+  };
 
   return (
     <aside className="w-64 bg-primary min-h-screen flex flex-col py-6 px-4 sticky top-0 h-screen">
@@ -53,7 +65,7 @@ export function Sidebar() {
       </nav>
 
       <button
-        onClick={logout}
+        onClick={handleLogout}
         className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-white/70 hover:bg-white/10 hover:text-white transition-colors mt-4"
       >
         <LogOut className="h-5 w-5" /> خروج

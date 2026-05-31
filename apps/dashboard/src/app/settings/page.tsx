@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
 import { useAuth } from '@/hooks/useAuth';
 import { Sidebar } from '@/components/Sidebar';
@@ -15,7 +16,9 @@ import { Store as StoreIcon, QrCode, Plus, Copy, Loader2, LogOut } from 'lucide-
 const WEB_URL = 'https://2smart-pickup-web.vercel.app';
 
 export default function SettingsPage() {
+  const router = useRouter();
   const { storeId, staff, logout } = useAuth();
+  const handleLogout = () => { logout(); router.replace('/login'); };
   const [store, setStore] = useState<Store | null>(null);
   const [spots, setSpots] = useState<ParkingSpot[]>([]);
   const [loading, setLoading] = useState(true);
@@ -154,7 +157,7 @@ export default function SettingsPage() {
                   <p className="font-semibold">{staff?.name}</p>
                   <p className="text-xs text-muted-foreground" dir="ltr">{staff?.mobile}</p>
                 </div>
-                <Button variant="destructive" onClick={logout} className="gap-2">
+                <Button variant="destructive" onClick={handleLogout} className="gap-2">
                   <LogOut className="h-4 w-4" /> تسجيل خروج
                 </Button>
               </CardContent>
