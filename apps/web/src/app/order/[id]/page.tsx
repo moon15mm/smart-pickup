@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
-import { onOrderStatusUpdate } from '@/lib/socket';
+import { onOrderStatusUpdate, joinCustomerRoom } from '@/lib/socket';
 import { formatPrice, formatDate } from '@/lib/utils';
 import { OrderStatus } from '@smart-pickup/shared';
 import type { Order } from '@smart-pickup/shared';
@@ -36,8 +36,15 @@ export default function OrderTrackerPage({ params }: Props) {
       .finally(() => setLoading(false));
   }, [params.id]);
 
+  // Join the customer's realtime room once we know the customerId
   useEffect(() => {
-    if (!order) return;
+    if (order?.customerId) {
+      joinCustomerRoom(order.customerId);
+    }
+  }, [order?.customerId]);
+
+  // Subscribe to live status updates
+  useEffect(() => {
     const cleanup: VoidFunction = onOrderStatusUpdate((update) => {
       if (update.orderId === params.id) {
         setOrder((prev) => prev ? {
@@ -48,7 +55,20 @@ export default function OrderTrackerPage({ params }: Props) {
       }
     });
     return cleanup;
-  }, [order, params.id]);
+  }, [params.id]);
+
+  // Lightweight polling fallback (every 8s) in case the socket drops
+  useEffect(() => {
+    const id = setInterval(() => {
+      api.get(`/orders/${params.id}`)
+        .then((data) => setOrder((prev) => {
+          const fresh = data as unknown as Order;
+          return prev && prev.status === fresh.status ? prev : fresh;
+        }))
+        .catch(() => {});
+    }, 8000);
+    return () => clearInterval(id);
+  }, [params.id]);
 
   if (loading) {
     return (
