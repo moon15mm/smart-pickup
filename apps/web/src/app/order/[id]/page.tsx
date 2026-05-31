@@ -38,7 +38,7 @@ export default function OrderTrackerPage({ params }: Props) {
 
   useEffect(() => {
     if (!order) return;
-    const off = onOrderStatusUpdate((update) => {
+    const cleanup: VoidFunction = onOrderStatusUpdate((update) => {
       if (update.orderId === params.id) {
         setOrder((prev) => prev ? {
           ...prev,
@@ -47,9 +47,7 @@ export default function OrderTrackerPage({ params }: Props) {
         } : prev);
       }
     });
-    return () => {
-      void off();
-    };
+    return cleanup;
   }, [order, params.id]);
 
   if (loading) {

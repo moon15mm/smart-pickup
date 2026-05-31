@@ -27,12 +27,16 @@ export function joinStoreRoom(storeId: string) {
 
 export function onOrderStatusUpdate(
   cb: (data: { orderId: string; status: string; estimatedMins?: number }) => void,
-): () => void {
+): VoidFunction {
   getSocket().on(WsEvent.ORDER_STATUS_UPDATED, cb);
-  return () => { getSocket().off(WsEvent.ORDER_STATUS_UPDATED, cb); };
+  return function cleanupOrderStatusUpdate(): void {
+    getSocket().off(WsEvent.ORDER_STATUS_UPDATED, cb);
+  };
 }
 
-export function onNewOrder(cb: (data: unknown) => void): () => void {
+export function onNewOrder(cb: (data: unknown) => void): VoidFunction {
   getSocket().on(WsEvent.ORDER_CREATED, cb);
-  return () => { getSocket().off(WsEvent.ORDER_CREATED, cb); };
+  return function cleanupNewOrder(): void {
+    getSocket().off(WsEvent.ORDER_CREATED, cb);
+  };
 }
